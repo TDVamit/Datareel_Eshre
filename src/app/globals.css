@@ -3,7 +3,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --secondary: #2463e9;
+  --secondary: #4ec48f;
 }
 
 @theme {
@@ -17,11 +17,11 @@
 }
 
 .bg-cutom-color{
-  background: #2463e9;
+  background: #4ec48f;
 }
 
 .bg-custom-light{
-  background: #2463e9;
+  background: #4ec48f;
   opacity: 20%;
 }
 
@@ -84,7 +84,7 @@ justify-content: center;
 
 
 .makeStyles-copyContainer-5{
-  background-color: #2463e9 !important;
+  background-color: #4ec48f !important;
 }
 
 .makeStyles-copyIcon-7{

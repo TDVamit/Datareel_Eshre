@@ -152,6 +152,42 @@ export async function POST(request: NextRequest) {
     
     if (!videoExists) {
       console.log('Video file not found at:', videoPath);
+      
+      // Try to return the default avatar video instead of error
+      const defaultAvatarVideo = `/Assets/${avatarName}/${avatarName}.mp4`;
+      const defaultVideoExists = await checkVideoExists(defaultAvatarVideo);
+      
+      if (defaultVideoExists) {
+        console.log('Returning default avatar video:', defaultAvatarVideo);
+        const responseData = {
+          success: true,
+          video_url: defaultAvatarVideo,
+          metadata: {
+            avatar_id,
+            avatar_name: avatarName,
+            language,
+            video_type,
+            disease: finalDisease,
+            generated_at: new Date().toISOString(),
+            file_path: defaultAvatarVideo,
+            note: "Using default avatar video as requested video was not found"
+          },
+          selections: selections || {
+            avatar: avatarName,
+            language,
+            videoType: video_type,
+            disease: finalDisease
+          }
+        };
+
+        console.log('Returning default video data:', responseData);
+        
+        return new Response(JSON.stringify(responseData), {
+          status: 200,
+          headers: { "Content-Type": "application/json" }
+        });
+      }
+      
       return new Response(
         JSON.stringify({ 
           message: `Video file not found: ${videoPath}. The video may not be available yet.` 

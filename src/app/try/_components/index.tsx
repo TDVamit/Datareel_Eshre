@@ -167,9 +167,9 @@ const PersonalizedVideoLoader = ({
           {/* Animated Logo/Icon */}
           <div className="relative mb-3 sm:mb-4 md:mb-6">
             <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 mx-auto relative">
-              <div className="absolute inset-0 border-2 sm:border-3 md:border-4 border-[#2463e9]/20 rounded-full animate-spin"></div>
+              <div className="absolute inset-0 border-2 sm:border-3 md:border-4 border-[#4ec48f]/20 rounded-full animate-spin"></div>
               <div
-                className="absolute inset-1 sm:inset-2 border-2 sm:border-3 md:border-4 border-[#2463e9] border-t-transparent rounded-full animate-spin"
+                className="absolute inset-1 sm:inset-2 border-2 sm:border-3 md:border-4 border-[#4ec48f] border-t-transparent rounded-full animate-spin"
                 style={{
                   animationDirection: "reverse",
                   animationDuration: "1.5s",
@@ -177,7 +177,7 @@ const PersonalizedVideoLoader = ({
               ></div>
               <div className="absolute inset-0 flex items-center justify-center">
                 <svg
-                  className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-[#2463e9] animate-pulse"
+                  className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-[#4ec48f] animate-pulse"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -201,7 +201,7 @@ const PersonalizedVideoLoader = ({
             {/* Overall Progress Bar */}
             <div className="w-full bg-gray-200 rounded-full h-1.5 sm:h-2 mb-1 sm:mb-2">
               <div
-                className="bg-gradient-to-r from-[#2463e9] to-[#1952d4] h-1.5 sm:h-2 rounded-full transition-all duration-300 ease-out"
+                className="bg-gradient-to-r from-[#4ec48f] to-[#3db37f] h-1.5 sm:h-2 rounded-full transition-all duration-300 ease-out"
                 style={{ width: `${overallProgress}%` }}
               />
             </div>
@@ -216,7 +216,7 @@ const PersonalizedVideoLoader = ({
         <div className="bg-white rounded-xl p-3 sm:p-4 md:p-6 shadow-lg border border-gray-100">
           <div className="flex items-start gap-2 sm:gap-3 md:gap-4">
             <div className="flex-shrink-0">
-              <div className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 bg-[#2463e9] rounded-full flex items-center justify-center">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 bg-[#4ec48f] rounded-full flex items-center justify-center">
                 <svg
                   className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-white animate-spin"
                   fill="none"
@@ -243,7 +243,7 @@ const PersonalizedVideoLoader = ({
               {/* Step Progress Bar */}
               <div className="w-full bg-gray-200 rounded-full h-1 sm:h-1.5">
                 <div
-                  className="bg-[#2463e9] h-1 sm:h-1.5 rounded-full transition-all duration-100 ease-out"
+                  className="bg-[#4ec48f] h-1 sm:h-1.5 rounded-full transition-all duration-100 ease-out"
                   style={{ width: `${progress}%` }}
                 />
               </div>
@@ -289,7 +289,7 @@ const PersonalizedVideoLoader = ({
               </span>
             </div>
             <div className="flex items-center gap-1.5 sm:gap-2">
-              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 bg-[#2463e9] rounded-full flex-shrink-0"></div>
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 bg-[#4ec48f] rounded-full flex-shrink-0"></div>
               <span className="text-gray-700 truncate">{selectedLanguage}</span>
             </div>
             <div className="flex items-center gap-1.5 sm:gap-2">
@@ -357,7 +357,7 @@ const StepIndicator = ({
         isCompleted
           ? "bg-green-500 text-white"
           : isActive
-          ? "bg-[#2463e9] text-white"
+          ? "bg-[#4ec48f] text-white"
           : "bg-gray-200 text-gray-500"
       }`}
     >
@@ -407,7 +407,7 @@ const SelectionCard = ({
       cursor-pointer transition-all duration-200 transform border hover:scale-[1.01] active:scale-[0.99] rounded-xl
       ${
         isSelected
-          ? "border-[#2463e9] shadow-sm"
+          ? "border-[#4ec48f] shadow-sm"
           : "border-gray-300 hover:shadow-sm"
       }
       ${disabled ? "opacity-50 cursor-not-allowed" : ""}
@@ -487,43 +487,11 @@ const createAvatarArray = () => [
     folderName: "Sophia",
     available: true,
   },
-  {
-    id: 4,
-    name: "Custom Avatar",
-    path: "custom",
-    videoPath: null,
-    desc: "Create your own",
-    folderName: "custom",
-    available: false,
-  },
+
 ];
 
 // Enhanced Video Type Configuration
 const createVideoTypeConfig = () => [
-  {
-    name: "Disease Explainer",
-    folderName: "Disease",
-    child: ["Tubal Block", "PCOD", "Teratozoospermia"],
-    icon: "/Initial_Consultation.svg",
-    desc: "Explain medical conditions clearly",
-    available: {
-      English: ["Tubal Block", "PCOD", "Teratozoospermia"],
-      French: ["Tubal Block"], // Limited availability for French/Spanish
-      Spanish: ["Tubal Block"],
-    },
-  },
-  {
-    name: "Report Explainer",
-    folderName: "Report",
-    child: ["Tubal Block", "Teratozoospermia"],
-    icon: "/report_logo.svg",
-    desc: "Break down complex reports",
-    available: {
-      English: ["Tubal Block", "Teratozoospermia"],
-      French: ["Tubal Block"],
-      Spanish: ["Tubal Block"],
-    },
-  },
   {
     name: "Educational Videos",
     folderName: "Educational",
@@ -696,7 +664,7 @@ export const GenerateVideoUI = () => {
           icon: "error",
           title: "Video Not Available",
           text: "Currently, the video is not available. Please try again later or select a different option.",
-          confirmButtonColor: "#2463e9",
+          confirmButtonColor: "#4ec48f",
         });
       } else {
         // Enhanced video data with metadata
@@ -722,7 +690,7 @@ export const GenerateVideoUI = () => {
         icon: "error",
         title: "Generation Failed",
         text: "Something went wrong. Please try again.",
-        confirmButtonColor: "#2463e9",
+        confirmButtonColor: "#4ec48f",
       });
     } finally {
       setLoading(false);
@@ -860,7 +828,7 @@ export const GenerateVideoUI = () => {
       {loading && (
         <div className="fixed inset-0 bg-white/90 backdrop-blur-sm z-50 flex items-center justify-center">
           <div className="text-center">
-            <CircularProgress size={40} style={{ color: "#2463e9" }} />
+            <CircularProgress size={40} style={{ color: "#4ec48f" }} />
             <p className="text-sm text-gray-600 mt-4">
               Finalizing your video...
             </p>
@@ -944,7 +912,7 @@ export const GenerateVideoUI = () => {
             </div>
             <div className={`py-6 ${request ? "hidden" : "block"}`}>
               <div className="text-center space-y-4">
-                <div className="w-12 h-12 bg-[#2463e9] mx-auto flex items-center justify-center rounded-full">
+                <div className="w-12 h-12 bg-[#4ec48f] mx-auto flex items-center justify-center rounded-full">
                   <FilmIcon className="text-white size-6" />
                 </div>
                 <h3 className="text-xl font-medium text-gray-900">
@@ -956,7 +924,7 @@ export const GenerateVideoUI = () => {
                 </p>
                 <button
                   onClick={() => setRequest(true)}
-                  className="mt-6 bg-[#2463e9] hover:bg-[#1952d4] text-white px-6 py-3 font-medium transition-colors rounded-xl cursor-pointer"
+                  className="mt-6 bg-[#4ec48f] hover:bg-[#3db37f] text-white px-6 py-3 font-medium transition-colors rounded-xl cursor-pointer"
                 >
                   Request Custom Video Demo
                 </button>
@@ -1001,89 +969,7 @@ export const GenerateVideoUI = () => {
             </div>
           </div>
 
-          {/* Enhanced Progress Bar */}
-          <div className="bg-gradient-to-r from-white to-blue-50 border border-blue-100 rounded-xl p-2 sm:p-3 md:p-4 lg:p-4 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 sm:mb-3 lg:mb-3 gap-2 sm:gap-3 lg:gap-0">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                  <svg
-                    className="w-2.5 h-2.5 sm:w-3 sm:h-3 lg:w-4 lg:h-4 text-white"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 text-xs sm:text-sm lg:text-base">
-                    Setup Progress
-                  </h3>
-                  <p className="text-xs text-gray-600 leading-tight">
-                    Complete all steps to generate
-                  </p>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600">
-                  {progressData.percentage}%
-                </div>
-                <div className="text-xs text-gray-500">
-                  {progressData.completed}/4 steps
-                </div>
-              </div>
-            </div>
 
-            <div className="relative">
-              <div className="w-full bg-gray-200 rounded-full h-2 sm:h-3 mb-2 sm:mb-3">
-                <div
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 sm:h-3 rounded-full transition-all duration-700 ease-out"
-                  style={{ width: `${progressData.percentage}%` }}
-                />
-              </div>
-              <div className="grid grid-cols-2 sm:flex sm:justify-between text-xs font-medium gap-1">
-                <span
-                  className={`${
-                    progressData.steps.avatar
-                      ? "text-blue-600"
-                      : "text-gray-400"
-                  } transition-colors text-center sm:text-left`}
-                >
-                  Avatar {progressData.steps.avatar && "✓"}
-                </span>
-                <span
-                  className={`${
-                    progressData.steps.language
-                      ? "text-blue-600"
-                      : "text-gray-400"
-                  } transition-colors text-center sm:text-left`}
-                >
-                  Language {progressData.steps.language && "✓"}
-                </span>
-                <span
-                  className={`${
-                    progressData.steps.videoType
-                      ? "text-blue-600"
-                      : "text-gray-400"
-                  } transition-colors text-center sm:text-left`}
-                >
-                  Video Type {progressData.steps.videoType && "✓"}
-                </span>
-                <span
-                  className={`${
-                    progressData.steps.disease
-                      ? "text-blue-600"
-                      : "text-gray-400"
-                  } transition-colors text-center sm:text-left`}
-                >
-                  Category {progressData.steps.disease && "✓"}
-                </span>
-              </div>
-            </div>
-          </div>
 
           {/* Avatar Selection */}
           <div ref={avatarSectionRef} className="bg-white rounded-xl border border-gray-200 shadow-sm p-2 sm:p-3 md:p-4 lg:p-5">
@@ -1423,7 +1309,7 @@ export const GenerateVideoUI = () => {
                           {disease}
                         </h3>
                         {selectedDisease === disease ? (
-                          <div className="w-4 h-4 sm:w-5 sm:h-5 bg-[#2463e9] rounded flex items-center justify-center">
+                          <div className="w-4 h-4 sm:w-5 sm:h-5 bg-[#4ec48f] rounded flex items-center justify-center">
                             <svg
                               className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white"
                               fill="currentColor"

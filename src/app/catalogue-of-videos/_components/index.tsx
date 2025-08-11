@@ -155,7 +155,7 @@ export const Catalogue = () => {
         <div className="">
           <div className="md:block  hidden absolute md:top-[2rem] md:right-5 top-[.8rem] right-[.5rem]  height-30">
             <Link href="/try">
-              <span className="underline inline-flex cursor-pointer gap-3 text-[#2463e9] text-[16px] font-medium px-3 py-1 justify-center rounded-[8px]  hover:opacity-90">
+              <span className="underline inline-flex cursor-pointer gap-3 text-[#4ec48f] text-[16px] font-medium px-3 py-1 justify-center rounded-[8px]  hover:opacity-90">
                 Generate AI Video
               </span>
             </Link>
@@ -174,7 +174,7 @@ export const Catalogue = () => {
 
         <div className="text-left mb-8 relative">
           <div className="flex gap-2">
-            <p className="text-[13px] md:text-[14px] font-bold text-[#2463e9]">
+                          <p className="text-[13px] md:text-[14px] font-bold text-[#4ec48f]">
               {selectedVideo?.data?.videoType || "Disease Explainer"}
             </p>
             <p className="text-[13px] md:text-[14px] font-bold text-[#747474]">
@@ -242,7 +242,7 @@ export const Catalogue = () => {
               }}
               className={`${
                 selectedVideo?.index === i
-                  ? "shadow-md md:p-2 p-1 border-2 rounded-lg border-[#2463e9] cursor-pointer"
+                  ? "shadow-md md:p-2 p-1 border-2 rounded-lg border-[#4ec48f] cursor-pointer"
                   : "cursor-pointer"
               }`}
             >

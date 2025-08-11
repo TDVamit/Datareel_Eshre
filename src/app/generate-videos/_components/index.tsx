@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import {
   CircularProgress,
   Dialog,
@@ -129,7 +129,9 @@ const PersonalizedVideoLoader = ({
       setProgress(0);
 
       const step = generationSteps[stepIndex];
-      const progressIncrement = 100 / (step.duration / 50);
+      // Adjust duration to complete in 10 seconds total
+      const adjustedDuration = 10000 / generationSteps.length; // 10 seconds divided by number of steps
+      const progressIncrement = 100 / (adjustedDuration / 50);
 
       progressInterval = setInterval(() => {
         setProgress((prev) => {
@@ -145,7 +147,7 @@ const PersonalizedVideoLoader = ({
       timeoutId = setTimeout(() => {
         clearInterval(progressInterval);
         runStep(stepIndex + 1);
-      }, step.duration);
+      }, adjustedDuration);
     };
 
     runStep(0);
@@ -162,158 +164,119 @@ const PersonalizedVideoLoader = ({
 
   return (
     <div className="fixed inset-0 bg-white/95 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
-      <div className="max-w-xs sm:max-w-sm md:max-w-md w-full">
-        <div className="text-center mb-4 sm:mb-6 md:mb-8">
-          {/* Animated Logo/Icon */}
-          <div className="relative mb-3 sm:mb-4 md:mb-6">
-            <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 mx-auto relative">
-              <div className="absolute inset-0 border-2 sm:border-3 md:border-4 border-[#2463e9]/20 rounded-full animate-spin"></div>
-              <div
-                className="absolute inset-1 sm:inset-2 border-2 sm:border-3 md:border-4 border-[#2463e9] border-t-transparent rounded-full animate-spin"
-                style={{
-                  animationDirection: "reverse",
-                  animationDuration: "1.5s",
-                }}
-              ></div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <svg
-                  className="w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8 text-[#2463e9] animate-pulse"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
+      <div className="max-w-6xl w-full mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+          {/* Left Side - Video Preview */}
+          <div className="flex flex-col items-center justify-center">
+            <div className="w-full max-w-lg">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900 mb-6 text-center">
+                Video Preview
+              </h2>
+              
+              {/* Avatar Preview */}
+              <div className="aspect-video bg-gray-100 rounded-xl overflow-hidden relative shadow-xl">
+                <video
+                  className="w-full h-full object-cover"
+                  src={`/Assets/${avatarArray[selectedAvatar || 0]?.name}/${avatarArray[selectedAvatar || 0]?.name}.mp4`}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                />
+                <div className="absolute bottom-4 left-4 bg-black/70 text-white text-sm px-3 py-1 rounded-lg">
+                  {avatarArray[selectedAvatar || 0]?.name}
+                </div>
+              </div>
+
+              {/* Template Info */}
+              <div className="mt-6 p-5 bg-gray-50 rounded-xl">
+                <h3 className="font-semibold text-gray-900 mb-3 text-lg">
+                  {selectedDisease || selectedVideoType}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {selectedLanguage} • {selectedVideoType}
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Progress Overview */}
-          <div className="mb-3 sm:mb-4 md:mb-6">
-            <h2 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 mb-1 sm:mb-2">
+          {/* Right Side - Progress */}
+          <div className="flex flex-col justify-center">
+            <div className="text-center mb-8">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900 mb-3">
               Creating Your Personalized Video
             </h2>
-            <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3 md:mb-4 leading-tight">
+              <p className="text-base text-gray-600">
               Generating custom content for {selectedLanguage}{" "}
               {selectedVideoType?.toLowerCase()}
               {selectedDisease && ` about ${selectedDisease}`}
             </p>
+            </div>
 
             {/* Overall Progress Bar */}
-            <div className="w-full bg-gray-200 rounded-full h-1.5 sm:h-2 mb-1 sm:mb-2">
-              <div
-                className="bg-gradient-to-r from-[#2463e9] to-[#1952d4] h-1.5 sm:h-2 rounded-full transition-all duration-300 ease-out"
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-base font-medium text-gray-700">
+                  Overall Progress
+                </span>
+                <span className="text-base font-semibold text-[#4ec48f]">
+                  {Math.round(overallProgress)}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div
+                  className="bg-gradient-to-r from-[#4ec48f] to-[#3db37e] h-3 rounded-full transition-all duration-300 ease-out"
                 style={{ width: `${overallProgress}%` }}
               />
-            </div>
-            <div className="text-xs text-gray-500">
-              Step {currentStep + 1} of {generationSteps.length} •{" "}
-              {Math.round(overallProgress)}% complete
-            </div>
           </div>
         </div>
 
-        {/* Current Step Details */}
-        <div className="bg-white rounded-xl p-3 sm:p-4 md:p-6 shadow-lg border border-gray-100">
-          <div className="flex items-start gap-2 sm:gap-3 md:gap-4">
-            <div className="flex-shrink-0">
-              <div className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 bg-[#2463e9] rounded-full flex items-center justify-center">
-                <svg
-                  className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-white animate-spin"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                  />
-                </svg>
-              </div>
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-gray-900 mb-0.5 sm:mb-1 text-xs sm:text-sm md:text-base">
+            {/* Current Step */}
+            <div className="space-y-4">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 {currentStepData?.title}
               </h3>
-              <p className="text-xs text-gray-600 mb-2 sm:mb-3 leading-tight">
+                <p className="text-base text-gray-600">
                 {currentStepData?.description}
               </p>
+              </div>
 
-              {/* Step Progress Bar */}
-              <div className="w-full bg-gray-200 rounded-full h-1 sm:h-1.5">
-                <div
-                  className="bg-[#2463e9] h-1 sm:h-1.5 rounded-full transition-all duration-100 ease-out"
+              {/* Step Progress */}
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">
+                    Step {currentStep + 1} of {generationSteps.length}
+                  </span>
+                  <span className="text-sm font-semibold text-[#4ec48f]">
+                    {Math.round(progress)}%
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className="bg-[#4ec48f] h-2 rounded-full transition-all duration-50"
                   style={{ width: `${progress}%` }}
                 />
               </div>
             </div>
           </div>
-        </div>
-
-        {/* User Selections Summary */}
-        <div className="mt-3 sm:mt-4 md:mt-6 bg-gray-50 rounded-xl p-2 sm:p-3 md:p-4">
-          <h4 className="font-medium text-gray-900 mb-1.5 sm:mb-2 md:mb-3 text-xs sm:text-sm">
-            Your Selections:
-          </h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2 text-xs">
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <div className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 bg-white rounded border overflow-hidden flex-shrink-0">
-                {selectedAvatar !== null &&
-                  (avatarArray[selectedAvatar]?.path !== "custom" &&
-                  avatarArray[selectedAvatar]?.videoPath ? (
-                    <video
-                      className="w-full h-full object-cover"
-                      src={avatarArray[selectedAvatar].videoPath}
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                    />
-                  ) : (
-                    <Image
-                      src={
-                        avatarArray[selectedAvatar]?.path !== "custom"
-                          ? avatarArray[selectedAvatar]?.path
-                          : "/create_own.png"
-                      }
-                      alt="avatar"
-                      width={16}
-                      height={16}
-                      className="object-cover sm:w-5 sm:h-5 md:w-6 md:h-6"
-                    />
-                  ))}
-              </div>
-              <span className="text-gray-700 truncate">
-                {avatarArray[selectedAvatar || 0]?.name}
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 bg-[#2463e9] rounded-full flex-shrink-0"></div>
-              <span className="text-gray-700 truncate">{selectedLanguage}</span>
-            </div>
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 bg-green-500 rounded-full flex-shrink-0"></div>
-              <span className="text-gray-700 truncate">
-                {selectedVideoType}
-              </span>
-            </div>
-            {selectedDisease && (
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 bg-orange-500 rounded-full flex-shrink-0"></div>
-                <span className="text-gray-700 truncate">
-                  {selectedDisease}
-                </span>
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Technical Details (for authenticity) */}
-        <div className="mt-2 sm:mt-3 md:mt-4 text-center">
-          <div className="inline-flex items-center gap-1.5 sm:gap-2 text-xs text-gray-500 bg-white px-2 sm:px-3 py-1 rounded-full border">
-            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span className="text-xs">AI Processing Engine Active</span>
+        {/* Notification Message */}
+        <div className="mt-8 text-center">
+          <div className="inline-flex items-center gap-4 bg-blue-50 border border-blue-200 rounded-xl px-8 py-6">
+            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <div>
+              <p className="text-base font-medium text-blue-900">
+                Video will be generated soon
+              </p>
+              <p className="text-sm text-blue-700">
+                We'll notify you via email when your personalized video is ready
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -357,7 +320,7 @@ const StepIndicator = ({
         isCompleted
           ? "bg-green-500 text-white"
           : isActive
-          ? "bg-[#2463e9] text-white"
+          ? "bg-[#4ec48f] text-white"
           : "bg-gray-200 text-gray-500"
       }`}
     >
@@ -407,7 +370,7 @@ const SelectionCard = ({
       cursor-pointer transition-all duration-200 transform border hover:scale-[1.01] active:scale-[0.99] rounded-xl
       ${
         isSelected
-          ? "border-[#2463e9] shadow-sm"
+          ? "border-[#4ec48f] shadow-sm"
           : "border-gray-300 hover:shadow-sm"
       }
       ${disabled ? "opacity-50 cursor-not-allowed" : ""}
@@ -443,6 +406,9 @@ const createVideoPath = (
     PCOD: "PCOD",
     Teratozoospermia: "Teratoozoospermia", // Note: folder has extra 'o'
     Stimulation: "Stimulation",
+    "Investment Basics": "Stimulation", // Map to existing Stimulation video
+    "Financial Planning": "Stimulation", // Map to existing Stimulation video
+    "Tax Strategies": "Stimulation", // Map to existing Stimulation video
   };
 
   // Special case for Alex's Tubal Block Disease Explainer
@@ -498,40 +464,332 @@ const createAvatarArray = () => [
   },
 ];
 
+// Script generation for templates
+const generateTemplateScript = (template: string): string => {
+  const scripts = {
+    "Investment Basics": "Welcome to Investment Basics! Today we'll explore the fundamental principles of investing. We'll cover key concepts like diversification, risk management, and compound interest. Understanding these basics is crucial for building a solid financial foundation. Whether you're just starting your investment journey or looking to refresh your knowledge, this guide will help you make informed decisions about your financial future.",
+    "Financial Planning": "Financial planning is the roadmap to your financial success. In this comprehensive guide, we'll walk through creating a budget, setting financial goals, building emergency funds, and planning for retirement. A well-crafted financial plan considers your current situation, future aspirations, and helps you navigate life's financial challenges with confidence and clarity.",
+    "Tax Strategies": "Tax strategies can significantly impact your financial outcomes. We'll explore legal ways to optimize your tax situation, including understanding deductions, credits, and tax-advantaged accounts. From maximizing retirement contributions to strategic timing of income and expenses, these strategies can help you keep more of your hard-earned money while staying compliant with tax laws."
+  };
+  
+  return scripts[template as keyof typeof scripts] || "Template script not available.";
+};
+
+// Final Preview Screen Component
+const FinalPreviewScreen = ({
+  selectedAvatar,
+  selectedLanguage,
+  selectedVideoType,
+  selectedDisease,
+  avatarArray,
+  onComplete,
+}: {
+  selectedAvatar: number | null;
+  selectedLanguage: string | null;
+  selectedVideoType: string | null;
+  selectedDisease: string | null;
+  avatarArray: Array<{
+    name: string;
+    path: string;
+    videoPath: string | null;
+    desc: string;
+    folderName?: string;
+  }>;
+  onComplete: () => void;
+}) => {
+  const [copied, setCopied] = useState<string | null>(null);
+  const videoUrl = `/Assets/${avatarArray[selectedAvatar || 0]?.name}/${avatarArray[selectedAvatar || 0]?.name}.mp4`;
+  const embedCode = `<iframe src="${videoUrl}" width="560" height="315" frameborder="0" allowfullscreen></iframe>`;
+  const shareUrl = `${window.location.origin}/generated-videos`;
+
+  const handleCopy = async (text: string, type: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(type);
+      setTimeout(() => setCopied(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  const handleWhatsAppShare = () => {
+    const text = `Check out my personalized video: ${shareUrl}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  const handleEmailShare = () => {
+    const subject = 'My Personalized Video';
+    const body = `I created a personalized video using our platform. Check it out: ${shareUrl}`;
+    const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(mailtoUrl);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-white/95 backdrop-blur-sm z-50 flex items-center justify-center p-4 sm:p-6">
+      <div className="max-w-7xl w-full mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+          {/* Left Side - Video Player */}
+          <div className="space-y-6">
+            {/* Success Header */}
+            <div className="text-center lg:text-left">
+              <div className="flex items-center justify-center lg:justify-start gap-3 mb-4">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div>
+                  <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+                    Video Generated Successfully!
+                  </h1>
+                  <p className="text-gray-600">Your personalized video is ready</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Video Player */}
+            <div className="bg-black rounded-xl overflow-hidden shadow-2xl">
+              <video
+                className="w-full h-full"
+                src={videoUrl}
+                controls
+                autoPlay
+                muted
+                playsInline
+                poster="/play_button.png"
+              />
+            </div>
+
+            {/* Video Details */}
+            <div className="bg-gray-50 rounded-xl p-6">
+              <h3 className="font-semibold text-gray-900 mb-4 text-lg">
+                Video Details
+              </h3>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Avatar:</span>
+                  <span className="font-medium">{avatarArray[selectedAvatar || 0]?.name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Language:</span>
+                  <span className="font-medium">{selectedLanguage}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Type:</span>
+                  <span className="font-medium">{selectedVideoType}</span>
+                </div>
+                {selectedDisease && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Template:</span>
+                    <span className="font-medium">{selectedDisease}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+
+          </div>
+
+          {/* Right Side - Share Options */}
+          <div className="space-y-8">
+            {/* Header */}
+            <div className="text-center lg:text-left">
+              <div className="flex items-center justify-center lg:justify-start gap-3 mb-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">
+                    Share Your Video
+                  </h2>
+                  <p className="text-gray-600">Spread the word about your creation</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Share Options Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* WhatsApp Share */}
+              <button
+                onClick={handleWhatsAppShare}
+                className="group relative overflow-hidden bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white p-6 rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-xl flex flex-col items-center justify-center gap-3"
+              >
+                <div className="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition-colors duration-300"></div>
+                <div className="relative z-10">
+                  <svg className="w-8 h-8 mb-2" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+                  </svg>
+                  <span className="text-sm">WhatsApp</span>
+                </div>
+              </button>
+
+              {/* Email Share */}
+              <button
+                onClick={handleEmailShare}
+                className="group relative overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-6 rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-xl flex flex-col items-center justify-center gap-3"
+              >
+                <div className="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition-colors duration-300"></div>
+                <div className="relative z-10">
+                  <svg className="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  <span className="text-sm">Email</span>
+                </div>
+              </button>
+
+              {/* Copy Link */}
+              <button
+                onClick={() => handleCopy(shareUrl, 'link')}
+                className="group relative overflow-hidden bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white p-6 rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-xl flex flex-col items-center justify-center gap-3"
+              >
+                <div className="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition-colors duration-300"></div>
+                <div className="relative z-10">
+                  <svg className="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                  </svg>
+                  <span className="text-sm">{copied === 'link' ? 'Copied!' : 'Copy Link'}</span>
+                </div>
+              </button>
+
+              {/* Copy Embed Code */}
+              <button
+                onClick={() => handleCopy(embedCode, 'embed')}
+                className="group relative overflow-hidden bg-gradient-to-br from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white p-6 rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-xl flex flex-col items-center justify-center gap-3"
+              >
+                <div className="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition-colors duration-300"></div>
+                <div className="relative z-10">
+                  <svg className="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                  </svg>
+                  <span className="text-sm">{copied === 'embed' ? 'Copied!' : 'Embed Code'}</span>
+                </div>
+              </button>
+            </div>
+
+            {/* Embed Code Section */}
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                  </svg>
+                </div>
+                <h3 className="font-semibold text-gray-900 text-lg">Embed Code</h3>
+              </div>
+              <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                <code className="text-xs text-gray-700 break-all font-mono bg-gray-50 px-3 py-2 rounded-lg block">
+                  {embedCode}
+                </code>
+              </div>
+              <p className="text-xs text-gray-500 mt-3">
+                Copy this code to embed the video on your website
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Custom Template Modal Component
+const CustomTemplateModal = ({
+  open,
+  onClose,
+  onSave,
+  templateName,
+  script,
+  onTemplateNameChange,
+  onScriptChange,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onSave: () => void;
+  templateName: string;
+  script: string;
+  onTemplateNameChange: (name: string) => void;
+  onScriptChange: (script: string) => void;
+}) => {
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+      <DialogContent className="p-6">
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="text-center">
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              Create Custom Template
+            </h2>
+            <p className="text-sm text-gray-600">
+              Enter your custom template name and script for personalized video generation.
+            </p>
+          </div>
+
+          {/* Template Name Input */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Template Name *
+            </label>
+            <input
+              type="text"
+              value={templateName}
+              onChange={(e) => onTemplateNameChange(e.target.value)}
+              placeholder="e.g., Retirement Planning, Estate Planning"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4ec48f] focus:border-[#4ec48f] outline-none transition-colors"
+            />
+          </div>
+
+          {/* Script Input */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Custom Script *
+            </label>
+            <textarea
+              value={script}
+              onChange={(e) => onScriptChange(e.target.value)}
+              placeholder="Enter your custom script here. This will be the content that your selected avatar will speak in the generated video."
+              rows={8}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4ec48f] focus:border-[#4ec48f] outline-none transition-colors resize-none"
+            />
+            <p className="text-xs text-gray-500">
+              Write a natural, conversational script that your avatar will deliver.
+            </p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-4">
+            <button
+              onClick={onClose}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onSave}
+              disabled={!templateName.trim() || !script.trim()}
+              className="flex-1 px-4 py-2 bg-[#4ec48f] text-white rounded-lg hover:bg-[#3db37e] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Create Template
+            </button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 // Enhanced Video Type Configuration
 const createVideoTypeConfig = () => [
   {
-    name: "Disease Explainer",
-    folderName: "Disease",
-    child: ["Tubal Block", "PCOD", "Teratozoospermia"],
-    icon: "/Initial_Consultation.svg",
-    desc: "Explain medical conditions clearly",
-    available: {
-      English: ["Tubal Block", "PCOD", "Teratozoospermia"],
-      French: ["Tubal Block"], // Limited availability for French/Spanish
-      Spanish: ["Tubal Block"],
-    },
-  },
-  {
-    name: "Report Explainer",
-    folderName: "Report",
-    child: ["Tubal Block", "Teratozoospermia"],
-    icon: "/report_logo.svg",
-    desc: "Break down complex reports",
-    available: {
-      English: ["Tubal Block", "Teratozoospermia"],
-      French: ["Tubal Block"],
-      Spanish: ["Tubal Block"],
-    },
-  },
-  {
     name: "Educational Videos",
     folderName: "Educational",
-    child: ["Stimulation"],
+    child: ["Investment Basics", "Financial Planning", "Tax Strategies"],
     icon: "/embryo.svg",
-    desc: "Teach medical procedures",
+    desc: "Teach financial procedures and strategies",
     available: {
-      English: ["Stimulation"],
+      English: ["Investment Basics", "Financial Planning", "Tax Strategies"],
       // French and Spanish educational videos are not available
     },
   },
@@ -575,6 +833,7 @@ export const GenerateVideoUI = () => {
   const [request, setRequest] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPersonalizedLoader, setShowPersonalizedLoader] = useState(false);
+  const [showFinalPreview, setShowFinalPreview] = useState(false);
   const [video, setVideo] = useState<{
     video_url: string;
     videoType?: string;
@@ -582,11 +841,91 @@ export const GenerateVideoUI = () => {
     language?: string;
   }>({ video_url: "" });
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  
+  // Custom template state
+  const [showCustomTemplateModal, setShowCustomTemplateModal] = useState(false);
+  const [customTemplateName, setCustomTemplateName] = useState("");
+  const [customScript, setCustomScript] = useState("");
+  const [isCustomTemplate, setIsCustomTemplate] = useState(false);
+
+  // Detect if user is signed in and force re-render when auth changes
+  const [authTrigger, setAuthTrigger] = useState(0);
+  const [renderCount, setRenderCount] = useState(0);
+  const [authChecked, setAuthChecked] = useState(false);
+  useEffect(() => {
+    const checkAuthStatus = () => {
+      if (typeof window !== 'undefined') {
+        setAuthTrigger(prev => prev + 1); // Force re-render
+        setAuthChecked(true); // Mark that auth has been checked
+      }
+    };
+
+    // Check on mount
+    checkAuthStatus();
+
+    // Listen for storage changes (when user logs out)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'user') {
+        checkAuthStatus();
+      }
+    };
+
+    // Listen for custom logout event
+    const handleLogout = () => {
+      checkAuthStatus();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('logout', handleLogout);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('logout', handleLogout);
+    };
+  }, []);
+
+  // Get avatars to show - only include custom avatar if signed in
+  const avatarsToShow = useMemo(() => {
+    const baseAvatars = createAvatarArray().slice(0, 3); // Always show first 3 avatars
+    const hasUser = typeof window !== 'undefined' && !!localStorage.getItem('user');
+    
+    if (hasUser) {
+      // Add custom avatar only if signed in
+      const customAvatar = createAvatarArray()[3]; // Get the custom avatar
+      return [...baseAvatars, customAvatar];
+    }
+    
+    return baseAvatars; // Only show first 3 avatars if not signed in
+  }, [authTrigger, renderCount, authChecked]);
 
   // Simulate initial loading
   React.useEffect(() => {
     const timer = setTimeout(() => setIsInitialLoading(false), 800);
     return () => clearTimeout(timer);
+  }, []);
+
+  // Only re-render when auth changes, not on every render
+  useEffect(() => {
+    const checkAuth = () => {
+      const hasUser = typeof window !== 'undefined' && !!localStorage.getItem('user');
+      setRenderCount(prev => prev + 1);
+    };
+    
+    // Check on mount
+    checkAuth();
+    
+    // Listen for storage changes
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'user') {
+        checkAuth();
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const avatarArray = useMemo(() => createAvatarArray(), []);
@@ -627,17 +966,31 @@ export const GenerateVideoUI = () => {
     [languageConfig]
   );
 
-  const generateVideo = useCallback(async () => {
-    // Show personalized loader first
-    setShowPersonalizedLoader(true);
-  }, []);
+  // Custom template handlers
+  const handleCreateCustomTemplate = () => {
+    setShowCustomTemplateModal(true);
+  };
 
-  const handlePersonalizedLoaderComplete = useCallback(async () => {
-    setShowPersonalizedLoader(false);
+  const handleSaveCustomTemplate = () => {
+    if (customTemplateName.trim() && customScript.trim()) {
+      setIsCustomTemplate(true);
+      setSelectedDisease(customTemplateName);
+      setShowCustomTemplateModal(false);
+    }
+  };
+
+  const handleCloseCustomTemplateModal = () => {
+    setShowCustomTemplateModal(false);
+    setCustomTemplateName("");
+    setCustomScript("");
+  };
+
+  const handleFinalPreviewComplete = useCallback(async () => {
+    setShowFinalPreview(false);
     setLoading(true);
 
     // Get selected avatar info
-    const selectedAvatarInfo = avatarArray[selectedAvatar || 0];
+    const selectedAvatarInfo = avatarsToShow[selectedAvatar || 0];
 
     // Create the actual video path
     const videoPath = createVideoPath(
@@ -674,18 +1027,11 @@ export const GenerateVideoUI = () => {
 
       const result = await response.json();
 
-      if (result?.message) {
-        await Swal.fire({
-          icon: "error",
-          title: "Video Not Available",
-          text: "Currently, the video is not available. Please try again later or select a different option.",
-          confirmButtonColor: "#2463e9",
-        });
-      } else {
+      if (result?.success) {
         // Enhanced video data with metadata
         const videoData = {
           ...result,
-          video_url: videoPath,
+          video_url: result.video_url || videoPath,
           videoType: selectedVideoType,
           diseaseType: selectedDisease,
           language: selectedLanguage,
@@ -698,6 +1044,13 @@ export const GenerateVideoUI = () => {
         sessionStorage.setItem("videoData", JSON.stringify(videoData));
         window.scrollTo({ top: 0, behavior: "smooth" });
         setShow(true);
+      } else {
+        await Swal.fire({
+          icon: "error",
+          title: "Video Not Available",
+          text: result?.message || "Currently, the video is not available. Please try again later or select a different option.",
+          confirmButtonColor: "#4ec48f",
+        });
       }
     } catch (error) {
       console.error("Video generation error:", error);
@@ -705,7 +1058,7 @@ export const GenerateVideoUI = () => {
         icon: "error",
         title: "Generation Failed",
         text: "Something went wrong. Please try again.",
-        confirmButtonColor: "#2463e9",
+        confirmButtonColor: "#4ec48f",
       });
     } finally {
       setLoading(false);
@@ -715,8 +1068,19 @@ export const GenerateVideoUI = () => {
     selectedLanguage,
     selectedVideoType,
     selectedDisease,
-    avatarArray,
+    avatarsToShow,
   ]);
+
+  const generateVideo = useCallback(async () => {
+    // Show personalized loader first
+    setShowPersonalizedLoader(true);
+  }, []);
+
+  const handlePersonalizedLoaderComplete = useCallback(async () => {
+    setShowPersonalizedLoader(false);
+    // Skip the intermediate preview page and go directly to the final video page
+    handleFinalPreviewComplete();
+  }, [handleFinalPreviewComplete]);
 
   const isFormValid = useMemo(() => {
     return (
@@ -825,7 +1189,7 @@ export const GenerateVideoUI = () => {
       {loading && (
         <div className="fixed inset-0 bg-white/90 backdrop-blur-sm z-50 flex items-center justify-center">
           <div className="text-center">
-            <CircularProgress size={40} style={{ color: "#2463e9" }} />
+            <CircularProgress size={40} style={{ color: "#4ec48f" }} />
             <p className="text-sm text-gray-600 mt-4">
               Finalizing your video...
             </p>
@@ -839,7 +1203,7 @@ export const GenerateVideoUI = () => {
           selectedLanguage={selectedLanguage}
           selectedVideoType={selectedVideoType}
           selectedDisease={selectedDisease}
-          avatarArray={avatarArray}
+          avatarArray={avatarsToShow}
           onComplete={handlePersonalizedLoaderComplete}
         />
       )}
@@ -849,7 +1213,7 @@ export const GenerateVideoUI = () => {
       </div>
 
       <div
-        className={`min-h-screen bg-gray-50 pt-20 ${show ? "hidden" : "block"}`}
+        className={`min-h-screen bg-gray-50 pt-24 ${show ? "hidden" : "block"}`}
       >
         {/* Minimal Custom Modal */}
         <Dialog
@@ -910,7 +1274,7 @@ export const GenerateVideoUI = () => {
             </div>
             <div className={`py-6 ${request ? "hidden" : "block"}`}>
               <div className="text-center space-y-4">
-                <div className="w-12 h-12 bg-[#2463e9] mx-auto flex items-center justify-center rounded-full">
+                <div className="w-12 h-12 bg-[#4ec48f] mx-auto flex items-center justify-center rounded-full">
                   <FilmIcon className="text-white size-6" />
                 </div>
                 <h3 className="text-xl font-medium text-gray-900">
@@ -922,7 +1286,7 @@ export const GenerateVideoUI = () => {
                 </p>
                 <button
                   onClick={() => setRequest(true)}
-                  className="mt-6 bg-[#2463e9] hover:bg-[#1952d4] text-white px-6 py-3 font-medium transition-colors rounded-xl cursor-pointer"
+                  className="mt-6 bg-[#4ec48f] hover:bg-[#3db37f] text-white px-6 py-3 font-medium transition-colors rounded-xl cursor-pointer"
                 >
                   Request Custom Video Demo
                 </button>
@@ -931,7 +1295,7 @@ export const GenerateVideoUI = () => {
           </DialogContent>
         </Dialog>
 
-        <div className="max-w-4xl mx-auto p-2 sm:p-3 md:p-4 lg:p-5 space-y-3 sm:space-y-4 md:space-y-5 lg:space-y-6">
+        <div className="max-w-6xl mx-auto p-2 sm:p-3 md:p-4 lg:p-5 space-y-3 sm:space-y-4 md:space-y-5 lg:space-y-6">
           {/* Enhanced Header */}
           <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
             <Link
@@ -967,89 +1331,7 @@ export const GenerateVideoUI = () => {
             </div>
           </div>
 
-          {/* Enhanced Progress Bar */}
-          <div className="bg-gradient-to-r from-white to-blue-50 border border-blue-100 rounded-xl p-2 sm:p-3 md:p-4 lg:p-4 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 sm:mb-3 lg:mb-3 gap-2 sm:gap-3 lg:gap-0">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                  <svg
-                    className="w-2.5 h-2.5 sm:w-3 sm:h-3 lg:w-4 lg:h-4 text-white"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 text-xs sm:text-sm lg:text-base">
-                    Setup Progress
-                  </h3>
-                  <p className="text-xs text-gray-600 leading-tight">
-                    Complete all steps to generate
-                  </p>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600">
-                  {progressData.percentage}%
-                </div>
-                <div className="text-xs text-gray-500">
-                  {progressData.completed}/4 steps
-                </div>
-              </div>
-            </div>
 
-            <div className="relative">
-              <div className="w-full bg-gray-200 rounded-full h-2 sm:h-3 mb-2 sm:mb-3">
-                <div
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 sm:h-3 rounded-full transition-all duration-700 ease-out"
-                  style={{ width: `${progressData.percentage}%` }}
-                />
-              </div>
-              <div className="grid grid-cols-2 sm:flex sm:justify-between text-xs font-medium gap-1">
-                <span
-                  className={`${
-                    progressData.steps.avatar
-                      ? "text-blue-600"
-                      : "text-gray-400"
-                  } transition-colors text-center sm:text-left`}
-                >
-                  Avatar {progressData.steps.avatar && "✓"}
-                </span>
-                <span
-                  className={`${
-                    progressData.steps.language
-                      ? "text-blue-600"
-                      : "text-gray-400"
-                  } transition-colors text-center sm:text-left`}
-                >
-                  Language {progressData.steps.language && "✓"}
-                </span>
-                <span
-                  className={`${
-                    progressData.steps.videoType
-                      ? "text-blue-600"
-                      : "text-gray-400"
-                  } transition-colors text-center sm:text-left`}
-                >
-                  Video Type {progressData.steps.videoType && "✓"}
-                </span>
-                <span
-                  className={`${
-                    progressData.steps.disease
-                      ? "text-blue-600"
-                      : "text-gray-400"
-                  } transition-colors text-center sm:text-left`}
-                >
-                  Category {progressData.steps.disease && "✓"}
-                </span>
-              </div>
-            </div>
-          </div>
 
           {/* Avatar Selection */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-2 sm:p-3 md:p-4 lg:p-5">
@@ -1060,25 +1342,23 @@ export const GenerateVideoUI = () => {
               isActive={selectedAvatar === null}
             />
 
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
-              {avatarArray.map((item, index) => (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+              {avatarsToShow.map((item, index) => (
                 <SelectionCard
                   key={index}
                   isSelected={selectedAvatar === index}
                   disabled={loading || showPersonalizedLoader}
                   onClick={() => {
-                    if (index !== 3) {
-                      setSelectedAvatar((prev) =>
-                        prev === index ? null : index
-                      );
+                    if (item.name !== "Custom Avatar") {
+                      setSelectedAvatar((prev) => prev === index ? null : index);
                     } else {
-                      setCustomModal(true);
+                      window.location.href = "/create-avatar";
                     }
                   }}
                 >
                   <div className="p-2 sm:p-3 lg:p-4 hover:from-blue-50 hover:to-white transition-all duration-200">
                     <div className="aspect-square relative bg-gray-100 mb-2 sm:mb-3 lg:mb-3 overflow-hidden rounded-lg shadow-sm">
-                      {index === 3 ? (
+                      {item.name === "Custom Avatar" ? (
                         // Custom avatar placeholder without image
                         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-100 to-indigo-100">
                           <div className="text-center">
@@ -1181,7 +1461,7 @@ export const GenerateVideoUI = () => {
               isActive={selectedAvatar !== null && selectedLanguage === null}
             />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
               {languages.map((lang) => {
                 // Check availability for current video type
                 const isAvailable = selectedVideoType
@@ -1275,7 +1555,7 @@ export const GenerateVideoUI = () => {
               isActive={selectedLanguage !== null && selectedVideoType === null}
             />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
               {videoType.map(({ name, child, icon, desc }) => (
                 <SelectionCard
                   key={name}
@@ -1324,12 +1604,12 @@ export const GenerateVideoUI = () => {
             </div>
           </div>
 
-          {/* Disease Selection */}
+          {/* Template Selection */}
           {diseaseList.length > 0 && (
             <div className="bg-white/70 backdrop-blur-sm rounded-xl p-2 sm:p-3 md:p-4 lg:p-5">
               <StepIndicator
                 step={4}
-                title="Select Category"
+                title="Select Template"
                 isCompleted={
                   selectedDisease !== null ||
                   selectedVideoType === "Educational Videos"
@@ -1341,27 +1621,140 @@ export const GenerateVideoUI = () => {
                 }
               />
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-3">
-                {diseaseList.map((disease) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                {/* Custom Template Option */}
                   <SelectionCard
-                    key={disease}
-                    isSelected={selectedDisease === disease}
+                  isSelected={isCustomTemplate}
                     disabled={loading || showPersonalizedLoader}
-                    onClick={() =>
+                  onClick={handleCreateCustomTemplate}
+                >
+                  <div className="p-4 space-y-4 h-full flex flex-col">
+                    {/* Template Title */}
+                    <div className="text-center">
+                      <h3 className="font-semibold text-gray-900 text-sm sm:text-base mb-2">
+                        Create Custom Template
+                      </h3>
+                    </div>
+
+                    {/* Content Area - Fixed Height */}
+                    <div className="flex-1 min-h-[200px]">
+                      <div className="h-full flex items-center justify-center">
+                        <div className="text-center text-gray-400">
+                          <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                          </svg>
+                          <p className="text-xs">Click to create custom template</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Selection Indicator */}
+                    <div className="flex justify-center">
+                      {isCustomTemplate ? (
+                        <div className="w-6 h-6 bg-[#4ec48f] rounded-full flex items-center justify-center">
+                          <svg
+                            className="w-4 h-4 text-white"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 10-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                      ) : (
+                        <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center">
+                          <svg
+                            className="w-4 h-4 text-gray-400"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 10-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </SelectionCard>
+
+                {/* Regular Templates */}
+                {diseaseList.map((template) => {
+                  const isSelected = selectedDisease === template && !isCustomTemplate;
+                  const script = generateTemplateScript(template);
+                  
+                  return (
+                    <SelectionCard
+                      key={template}
+                      isSelected={isSelected}
+                      disabled={loading || showPersonalizedLoader}
+                      onClick={() => {
+                        setIsCustomTemplate(false);
                       setSelectedDisease((prev) =>
-                        prev === disease ? null : disease
-                      )
-                    }
-                  >
-                    <div className="p-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-medium text-gray-900 text-xs sm:text-sm">
-                          {disease}
+                          prev === template ? null : template
+                        );
+                      }}
+                    >
+                                          <div className="p-4 space-y-4 h-full flex flex-col">
+                      {/* Template Title */}
+                      <div className="text-center">
+                        <h3 className="font-semibold text-gray-900 text-sm sm:text-base mb-2">
+                          {template}
                         </h3>
-                        {selectedDisease === disease ? (
-                          <div className="w-4 h-4 sm:w-5 sm:h-5 bg-[#2463e9] rounded flex items-center justify-center">
+                      </div>
+
+                                              {/* Content Area - Fixed Height */}
+                        <div className="flex-1 min-h-[200px]">
+                          {isSelected ? (
+                            <div className="space-y-3 h-full">
+                              {/* Avatar Video */}
+                              <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden relative mx-auto max-w-xs">
+                                <video
+                                  className="w-full h-full object-cover"
+                                  src={`/Assets/${avatarsToShow[selectedAvatar || 0]?.name}/${avatarsToShow[selectedAvatar || 0]?.name}.mp4`}
+                                  autoPlay
+                                  loop
+                                  muted
+                                  playsInline
+                                />
+                                <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                                  {avatarsToShow[selectedAvatar || 0]?.name}
+                                </div>
+                              </div>
+
+                              {/* Script Preview */}
+                              <div className="bg-gray-50 rounded-lg p-3">
+                                <h4 className="font-medium text-gray-900 text-xs mb-2">
+                                  Script Preview:
+                                </h4>
+                                <p className="text-xs text-gray-700 leading-relaxed">
+                                  {isCustomTemplate ? customScript : script}
+                                </p>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="h-full flex items-center justify-center">
+                              <div className="text-center text-gray-400">
+                                <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                                <p className="text-xs">Click to preview</p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                      {/* Selection Indicator */}
+                      <div className="flex justify-center">
+                        {isSelected ? (
+                          <div className="w-6 h-6 bg-[#4ec48f] rounded-full flex items-center justify-center">
                             <svg
-                              className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white"
+                              className="w-4 h-4 text-white"
                               fill="currentColor"
                               viewBox="0 0 20 20"
                             >
@@ -1373,9 +1766,9 @@ export const GenerateVideoUI = () => {
                             </svg>
                           </div>
                         ) : (
-                          <div className="w-4 h-4 sm:w-5 sm:h-5 bg-foreground/20 rounded flex items-center justify-center">
+                          <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center">
                             <svg
-                              className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white"
+                              className="w-4 h-4 text-gray-400"
                               fill="currentColor"
                               viewBox="0 0 20 20"
                             >
@@ -1390,7 +1783,8 @@ export const GenerateVideoUI = () => {
                       </div>
                     </div>
                   </SelectionCard>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
@@ -1496,6 +1890,29 @@ export const GenerateVideoUI = () => {
           </div>
         </div>
       </div>
+
+      {/* Custom Template Modal */}
+      <CustomTemplateModal
+        open={showCustomTemplateModal}
+        onClose={handleCloseCustomTemplateModal}
+        onSave={handleSaveCustomTemplate}
+        templateName={customTemplateName}
+        script={customScript}
+        onTemplateNameChange={setCustomTemplateName}
+        onScriptChange={setCustomScript}
+      />
+
+      {/* Final Preview Screen */}
+      {showFinalPreview && (
+        <FinalPreviewScreen
+          selectedAvatar={selectedAvatar}
+          selectedLanguage={selectedLanguage}
+          selectedVideoType={selectedVideoType}
+          selectedDisease={selectedDisease}
+          avatarArray={avatarArray}
+          onComplete={handleFinalPreviewComplete}
+        />
+      )}
     </>
   );
 };

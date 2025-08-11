@@ -6,7 +6,7 @@ function ProgramFeatures() {
   const featureCategories = [
     {
       category: "Analytics",
-      categoryColor: "bg-blue-600",
+      categoryColor: "bg-[#4ec48f]",
       title: "Advanced Analytics",
       subtitle: "Real-time engagement metrics",
       challenge:
@@ -73,8 +73,8 @@ function ProgramFeatures() {
       value: "78%",
       label: "Engagement Increase",
       icon: TrendingUp,
-      textColor: "text-blue-600",
-      bgColor: "bg-blue-100",
+        textColor: "text-[#4ec48f]",
+  bgColor: "bg-[#4ec48f]/10",
     },
     {
       value: "90%",

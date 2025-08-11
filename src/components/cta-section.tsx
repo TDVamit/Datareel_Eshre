@@ -53,7 +53,7 @@ export default function CTASection() {
             fill
             priority
           /> */}
-            <div className="absolute inset-0 z-[-1] h-full w-full bg-gradient-to-br from-[#fe774330] via-[#ffffff30_50%] to-[#2563eb30] object-cover object-right dark:from-[#fe774330] dark:via-[#00000030_50%] dark:to-[#2563eb30] md:object-center" />
+            <div className="absolute inset-0 z-[-1] h-full w-full bg-gradient-to-br from-[#fe774330] via-[#ffffff30_50%] to-[#4ec48f30] object-cover object-right dark:from-[#fe774330] dark:via-[#00000030_50%] dark:to-[#4ec48f30] md:object-center" />
             <div className="flex flex-col items-center justify-center py-12">
               <h1 className="max-w-xs text-center text-4xl font-medium leading-tighter tracking-tighter md:max-w-xl md:text-7xl text-balance">
                 Tell us what you need

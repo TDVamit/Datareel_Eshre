@@ -110,10 +110,10 @@ const OptimizedVideoPlayer = ({
             />
           </svg>
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            Video Unavailable
+            Demo Video Loading
           </h3>
           <p className="text-gray-600">
-            Unable to load the video. Please try again later.
+            Loading demo video. If this persists, please try refreshing the page.
           </p>
         </div>
       </div>
@@ -127,7 +127,7 @@ const OptimizedVideoPlayer = ({
           <div className="text-center">
             <CircularProgress
               size={24}
-              style={{ color: "#2463e9" }}
+              style={{ color: "#4ec48f" }}
               className="sm:w-8 sm:h-8 lg:w-10 lg:h-10"
             />
             <p className="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2">
@@ -179,7 +179,9 @@ const ActionButton = ({
       onClick={onClick}
       className={`p-1.5 sm:p-2 lg:p-3 rounded-xl transition-colors flex items-center justify-center ${
         variant === "primary"
-          ? "bg-[#2463e9] hover:bg-[#1952d4] text-white"
+          ? "bg-[#4ec48f] hover:bg-[#3db37f] text-white"
+          : label === "Share video"
+          ? "bg-[#4ec48f] hover:bg-[#3db37f] text-white shadow-lg border-2 border-white/20 transform hover:scale-105 transition-all duration-200"
           : "bg-white hover:bg-gray-50 text-gray-700 border border-gray-200"
       }`}
     >
@@ -191,7 +193,7 @@ const ActionButton = ({
 export const GeneratedVideoUI = ({ setShow, video }: GeneratedVideoUIProps) => {
   const router = useRouter();
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   // const [downloading, setDownloading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const videoElementRef = useRef<HTMLVideoElement | null>(null);
@@ -250,24 +252,7 @@ export const GeneratedVideoUI = ({ setShow, video }: GeneratedVideoUIProps) => {
 
   return (
     <>
-      {/* Share Dialog */}
 
-      <ShareVideoDialog
-        open={open}
-        onClose={handleClose}
-        videoUrl={
-          new URL(
-            `/generated-videos?video_url=${encodeURIComponent(
-              video?.video_url || ""
-            )}&videoType=${encodeURIComponent(
-              video?.videoType || ""
-            )}&diseaseType=${encodeURIComponent(
-              video?.diseaseType || ""
-            )}&language=${encodeURIComponent(video?.language || "")}`,
-            window.location.origin
-          ).href || ""
-        }
-      />
 
       <Dialog
         open={modalOpen}
@@ -334,43 +319,43 @@ export const GeneratedVideoUI = ({ setShow, video }: GeneratedVideoUIProps) => {
                         />
                       </svg>
                       <p className="text-gray-600 text-xs sm:text-sm lg:text-base">
-                        No video available
+                        Loading demo video...
                       </p>
                     </div>
-                  </div>
+        </div>
                 )}
-              </div>
+        </div>
             </div>
 
             {/* Expanded Sidebar */}
             <div className="lg:col-span-2 space-y-4">
+              {/* Share Section */}
+              <ShareVideoDialog
+                open={open}
+                onClose={() => {}} // Disable closing
+                videoUrl={
+                  new URL(
+                    `/generated-videos?video_url=${encodeURIComponent(
+                      video?.video_url || ""
+                    )}&videoType=${encodeURIComponent(
+                      video?.videoType || ""
+                    )}&diseaseType=${encodeURIComponent(
+                      video?.diseaseType || ""
+                    )}&language=${encodeURIComponent(video?.language || "")}`,
+                    window.location.origin
+                  ).href || ""
+                }
+              />
+
               {/* Video Info */}
               <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 lg:p-6 flex flex-col gap-2">
                 <div className="flex justify-between items-center gap-1.5 sm:gap-2 lg:gap-3 mb-1.5 sm:mb-2">
                   <span className="px-3 py-1 bg-blue-100 text-blue-600 text-base font-medium rounded-full">
-                    {video?.videoType || "Disease Explainer"}
+                    {video?.videoType || "Educational Videos"}
                   </span>
                   {/* Action Buttons */}
                   <div className="flex flex-col gap-1.5 sm:gap-2 lg:gap-3">
-                    <ActionButton
-                      onClick={handleOpen}
-                      label="Share video"
-                      icon={
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
-                          />
-                        </svg>
-                      }
-                    />
+
                   </div>
                 </div>
                 <div className="flex justify-between items-center gap-4">
@@ -379,17 +364,11 @@ export const GeneratedVideoUI = ({ setShow, video }: GeneratedVideoUIProps) => {
                       Language: {video?.language || "English"}
                     </p>
                     <span className="text-gray-700 text-sm font-medium rounded-full">
-                      {video?.diseaseType || "Tubal Block"}
+                      {video?.diseaseType || "Investment Basics"}
                     </span>
                   </div>
-                  <button
-                    onClick={() => setModalOpen(true)}
-                    className="flex items-end text-white justify-center rounded-full border border-white/[0.12] bg-secondary px-5 py-2 text-xs font-medium tracking-wide shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] transition-all ease-out active:scale-95 cursor-pointer"
-                  >
-                    Book Demo
-                  </button>
                 </div>
-              </div>
+          </div>
 
               {/* Quick Actions */}
               <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 lg:p-6">
@@ -397,16 +376,16 @@ export const GeneratedVideoUI = ({ setShow, video }: GeneratedVideoUIProps) => {
                   Quick Actions
                 </h3>
                 <div className="space-y-2 sm:space-y-3">
-                  <button
+            <button
                     onClick={handleGenerateAnother}
                     className="w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 lg:p-4 text-left hover:bg-blue-50 transition-colors rounded-xl border border-gray-200 hover:border-blue-200"
-                  >
+            >
                     <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                      <svg
+              <svg
                         className="w-6 h-6 text-blue-600"
                         fill="none"
                         stroke="currentColor"
-                        viewBox="0 0 24 24"
+                viewBox="0 0 24 24"
                       >
                         <path
                           strokeLinecap="round"
@@ -414,7 +393,7 @@ export const GeneratedVideoUI = ({ setShow, video }: GeneratedVideoUIProps) => {
                           strokeWidth={2}
                           d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                         />
-                      </svg>
+              </svg>
                     </div>
                     <div>
                       <div className="text-sm font-semibold text-gray-900">
@@ -424,7 +403,7 @@ export const GeneratedVideoUI = ({ setShow, video }: GeneratedVideoUIProps) => {
                         Create a new personalized video
                       </div>
                     </div>
-                  </button>
+            </button>
                   {/* <button className="w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 lg:p-4 text-left hover:bg-gray-50 transition-colors rounded-xl border border-gray-200">
                     <div className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
                       <svg
@@ -450,23 +429,23 @@ export const GeneratedVideoUI = ({ setShow, video }: GeneratedVideoUIProps) => {
                       </div>
                     </div>
                   </button> */}
-                </div>
-              </div>
+        </div>
+          </div>
 
-              {/* Performance Metrics */}
+          {/* Performance Metrics */}
               <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 lg:p-6 mb-3 sm:mb-4 lg:mb-6">
                 <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 lg:mb-6">
-                  Performance Metrics
+              Performance Metrics
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="text-center p-3 bg-blue-100 flex flex-col justify-center items-center rounded-xl">
                     <div className="text-lg sm:text-xl font-bold text-blue-600 mb-0.5 sm:mb-1">
                       78%
-                    </div>
+            </div>
                     <div className="text-xs text-gray-600 font-medium">
-                      Engagement Increase
+                  Engagement Increase
                     </div>
-                  </div>
+              </div>
                   <div className="text-center p-3 bg-green-100 flex flex-col justify-center items-center rounded-xl">
                     <div className="text-lg sm:text-xl font-bold text-green-600 mb-0.5 sm:mb-1">
                       90%
@@ -474,13 +453,13 @@ export const GeneratedVideoUI = ({ setShow, video }: GeneratedVideoUIProps) => {
                     <div className="text-xs text-gray-600 font-medium">
                       Cost Reduction
                     </div>
-                  </div>
+              </div>
                   <div className="text-center p-3 bg-purple-100 flex flex-col justify-center items-center rounded-xl">
                     <div className="text-lg sm:text-xl font-bold text-purple-600 mb-0.5 sm:mb-1">
-                      $0.50
+                  $0.50
                     </div>
                     <div className="text-xs text-gray-600 font-medium">
-                      Video Cost Starting From
+                  Video Cost Starting From
                     </div>
                   </div>
                 </div>
@@ -501,64 +480,64 @@ export const GeneratedVideoUI = ({ setShow, video }: GeneratedVideoUIProps) => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4 xl:gap-6">
-              {[
-                {
-                  title: "Advanced Analytics",
-                  icon: "/graph-svgrepo-com1.png",
-                  desc: "Real-time engagement metrics, completion rates, and patient interaction insights",
-                },
-                {
-                  title: "Engagement Tracking",
-                  icon: "/graph-svgrepo-com2.png",
-                  desc: "Monitor video effectiveness and patient comprehension levels across all touchpoints",
-                },
-                {
-                  title: "Approval Workflow",
-                  icon: "/graph-svgrepo-com3.png",
-                  desc: "Multi-tier medical content review and compliance validation system",
-                },
-                {
-                  title: "Smart Callbacks",
-                  icon: "/graph-svgrepo-com4.png",
-                  desc: "Automated follow-up scheduling based on patient engagement and care protocols",
-                },
-                {
-                  title: "Feedback Collection",
-                  icon: "/graph-svgrepo-com6.png",
-                  desc: "Integrated patient satisfaction surveys and clinical outcome tracking",
-                },
-                {
+            {[
+              {
+                title: "Advanced Analytics",
+                icon: "/graph-svgrepo-com1.png",
+                desc: "Real-time engagement metrics, completion rates, and patient interaction insights",
+              },
+              {
+                title: "Engagement Tracking",
+                icon: "/graph-svgrepo-com2.png",
+                desc: "Monitor video effectiveness and patient comprehension levels across all touchpoints",
+              },
+              {
+                title: "Approval Workflow",
+                icon: "/graph-svgrepo-com3.png",
+                desc: "Multi-tier medical content review and compliance validation system",
+              },
+              {
+                title: "Smart Callbacks",
+                icon: "/graph-svgrepo-com4.png",
+                desc: "Automated follow-up scheduling based on patient engagement and care protocols",
+              },
+              {
+                title: "Feedback Collection",
+                icon: "/graph-svgrepo-com6.png",
+                desc: "Integrated patient satisfaction surveys and clinical outcome tracking",
+              },
+              {
                   title: "Enterprise Security",
-                  icon: "/graph-svgrepo-com5.png",
+                icon: "/graph-svgrepo-com5.png",
                   desc: "Zero-trust architecture and healthcare data protection",
-                },
-              ].map((feature, i) => (
-                <div
-                  key={i}
+              },
+            ].map((feature, i) => (
+              <div
+                key={i}
                   className="p-2 sm:p-3 lg:p-4 xl:p-6 bg-gray-50 hover:bg-gray-100 transition-colors rounded-xl"
-                >
+              >
                   <div className="flex items-start gap-2 sm:gap-3 lg:gap-4">
                     <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-white rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Image
-                        src={feature.icon}
-                        alt={feature.title}
+                  <Image
+                    src={feature.icon}
+                    alt={feature.title}
                         width={16}
                         height={16}
                         className="sm:w-5 sm:h-5 lg:w-6 lg:h-6"
-                      />
-                    </div>
-                    <div>
+                  />
+                </div>
+                <div>
                       <h3 className="font-medium text-gray-900 mb-1 sm:mb-2 text-xs sm:text-sm lg:text-base">
-                        {feature.title}
+                    {feature.title}
                       </h3>
                       <p className="text-xs sm:text-sm text-gray-600">
-                        {feature.desc}
-                      </p>
+                    {feature.desc}
+                  </p>
                     </div>
-                  </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
+          </div>
           </div> */}
         </div>
       </div>

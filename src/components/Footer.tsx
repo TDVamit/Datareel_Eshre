@@ -13,7 +13,7 @@ const Footer = () => {
         <div className="mx-0 flex max-w-xs flex-col items-start justify-start ">
           <Link href="/" className="flex items-center gap-2">
             <Image
-              src={"/v2/brand/logo-light.svg"}
+              src={"/logo.jpg"}
               alt={`Datareel Logo`}
               priority
               width={2250}
